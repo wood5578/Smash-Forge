@@ -92,6 +92,7 @@
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.cbIsNDWD = new System.Windows.Forms.CheckBox();
             this.greenArrowPictureBox = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.greenArrowPictureBox)).BeginInit();
@@ -612,6 +613,19 @@
             this.backgroundWorker1.WorkerReportsProgress = true;
             this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
+            // cbIsNDWD
+            // 
+            this.cbIsNDWD.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbIsNDWD.AutoSize = true;
+            this.cbIsNDWD.Checked = true;
+            this.cbIsNDWD.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbIsNDWD.Location = new System.Drawing.Point(972, 4);
+            this.cbIsNDWD.Name = "cbIsNDWD";
+            this.cbIsNDWD.Size = new System.Drawing.Size(96, 17);
+            this.cbIsNDWD.TabIndex = 28;
+            this.cbIsNDWD.Text = "NDWD Format";
+            this.cbIsNDWD.UseVisualStyleBackColor = true;
+            // 
             // 
             // greenArrowPictureBox
             // 
@@ -631,6 +645,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1217, 765);
+            this.Controls.Add(this.cbIsNDWD);
             this.Controls.Add(this.greenArrowPictureBox);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.dockPanel1);
@@ -721,6 +736,7 @@
         private System.Windows.Forms.ToolStripMenuItem meleeDatToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nudToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem meleeDatToolStripMenuItem1;
+        private System.Windows.Forms.CheckBox cbIsNDWD;
     }
 }
 

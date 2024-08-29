@@ -48,12 +48,13 @@
             this.rotate90CB = new System.Windows.Forms.CheckBox();
             this.transUvVerticalCB = new System.Windows.Forms.CheckBox();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.vertColorCB255 = new System.Windows.Forms.CheckBox();
             this.optionsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // importButton
             // 
-            this.importButton.Location = new System.Drawing.Point(106, 371);
+            this.importButton.Location = new System.Drawing.Point(102, 393);
             this.importButton.Name = "importButton";
             this.importButton.Size = new System.Drawing.Size(75, 23);
             this.importButton.TabIndex = 0;
@@ -64,7 +65,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 355);
+            this.label1.Location = new System.Drawing.Point(13, 377);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(239, 13);
             this.label1.TabIndex = 1;
@@ -83,7 +84,7 @@
             // vertColorDivCB
             // 
             this.vertColorDivCB.AutoSize = true;
-            this.vertColorDivCB.Location = new System.Drawing.Point(6, 135);
+            this.vertColorDivCB.Location = new System.Drawing.Point(6, 159);
             this.vertColorDivCB.Name = "vertColorDivCB";
             this.vertColorDivCB.Size = new System.Drawing.Size(171, 17);
             this.vertColorDivCB.TabIndex = 15;
@@ -93,7 +94,7 @@
             // stageMatCB
             // 
             this.stageMatCB.AutoSize = true;
-            this.stageMatCB.Location = new System.Drawing.Point(6, 182);
+            this.stageMatCB.Location = new System.Drawing.Point(6, 206);
             this.stageMatCB.Name = "stageMatCB";
             this.stageMatCB.Size = new System.Drawing.Size(116, 17);
             this.stageMatCB.TabIndex = 14;
@@ -103,7 +104,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(5, 212);
+            this.label5.Location = new System.Drawing.Point(5, 236);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(34, 13);
             this.label5.TabIndex = 13;
@@ -111,7 +112,7 @@
             // 
             // scaleTB
             // 
-            this.scaleTB.Location = new System.Drawing.Point(45, 209);
+            this.scaleTB.Location = new System.Drawing.Point(45, 233);
             this.scaleTB.Name = "scaleTB";
             this.scaleTB.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.scaleTB.Size = new System.Drawing.Size(42, 20);
@@ -121,7 +122,7 @@
             // smoothNrmCB
             // 
             this.smoothNrmCB.AutoSize = true;
-            this.smoothNrmCB.Location = new System.Drawing.Point(6, 158);
+            this.smoothNrmCB.Location = new System.Drawing.Point(6, 182);
             this.smoothNrmCB.Name = "smoothNrmCB";
             this.smoothNrmCB.Size = new System.Drawing.Size(103, 17);
             this.smoothNrmCB.TabIndex = 11;
@@ -131,14 +132,14 @@
             // vbnFileLabel
             // 
             this.vbnFileLabel.AutoSize = true;
-            this.vbnFileLabel.Location = new System.Drawing.Point(87, 240);
+            this.vbnFileLabel.Location = new System.Drawing.Point(87, 264);
             this.vbnFileLabel.Name = "vbnFileLabel";
             this.vbnFileLabel.Size = new System.Drawing.Size(0, 13);
             this.vbnFileLabel.TabIndex = 10;
             // 
             // openVbnButton
             // 
-            this.openVbnButton.Location = new System.Drawing.Point(6, 235);
+            this.openVbnButton.Location = new System.Drawing.Point(6, 259);
             this.openVbnButton.Name = "openVbnButton";
             this.openVbnButton.Size = new System.Drawing.Size(75, 23);
             this.openVbnButton.TabIndex = 9;
@@ -155,6 +156,7 @@
             this.vertcolorCB.TabIndex = 8;
             this.vertcolorCB.Text = "Ignore vertex colors (sets all to 127)";
             this.vertcolorCB.UseVisualStyleBackColor = true;
+            this.vertcolorCB.CheckedChanged += new System.EventHandler(this.vertcolorCB_CheckedChanged);
             // 
             // importTexCB
             // 
@@ -169,7 +171,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(5, 294);
+            this.label4.Location = new System.Drawing.Point(5, 318);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 13);
             this.label4.TabIndex = 5;
@@ -179,7 +181,7 @@
             // 
             this.boneTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boneTypeComboBox.FormattingEnabled = true;
-            this.boneTypeComboBox.Location = new System.Drawing.Point(78, 291);
+            this.boneTypeComboBox.Location = new System.Drawing.Point(78, 315);
             this.boneTypeComboBox.Name = "boneTypeComboBox";
             this.boneTypeComboBox.Size = new System.Drawing.Size(199, 21);
             this.boneTypeComboBox.TabIndex = 6;
@@ -187,7 +189,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 267);
+            this.label3.Location = new System.Drawing.Point(5, 291);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 5;
@@ -197,7 +199,7 @@
             // 
             this.vertTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.vertTypeComboBox.FormattingEnabled = true;
-            this.vertTypeComboBox.Location = new System.Drawing.Point(78, 264);
+            this.vertTypeComboBox.Location = new System.Drawing.Point(78, 288);
             this.vertTypeComboBox.Name = "vertTypeComboBox";
             this.vertTypeComboBox.Size = new System.Drawing.Size(199, 21);
             this.vertTypeComboBox.TabIndex = 5;
@@ -238,20 +240,32 @@
             this.optionsGroupBox.Controls.Add(this.boneTypeComboBox);
             this.optionsGroupBox.Controls.Add(this.openVbnButton);
             this.optionsGroupBox.Controls.Add(this.label4);
+            this.optionsGroupBox.Controls.Add(this.vertColorCB255);
             this.optionsGroupBox.Controls.Add(this.vertcolorCB);
             this.optionsGroupBox.Controls.Add(this.importTexCB);
             this.optionsGroupBox.Location = new System.Drawing.Point(12, 12);
             this.optionsGroupBox.Name = "optionsGroupBox";
-            this.optionsGroupBox.Size = new System.Drawing.Size(289, 340);
+            this.optionsGroupBox.Size = new System.Drawing.Size(289, 362);
             this.optionsGroupBox.TabIndex = 5;
             this.optionsGroupBox.TabStop = false;
             this.optionsGroupBox.Text = "Import Options";
+            // 
+            // vertColorCB255
+            // 
+            this.vertColorCB255.AutoSize = true;
+            this.vertColorCB255.Location = new System.Drawing.Point(6, 135);
+            this.vertColorCB255.Name = "vertColorCB255";
+            this.vertColorCB255.Size = new System.Drawing.Size(193, 17);
+            this.vertColorCB255.TabIndex = 8;
+            this.vertColorCB255.Text = "Ignore vertex colors (sets all to 255)";
+            this.vertColorCB255.UseVisualStyleBackColor = true;
+            this.vertColorCB255.CheckedChanged += new System.EventHandler(this.vertColorCB255_CheckedChanged);
             // 
             // DAEImportSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(313, 403);
+            this.ClientSize = new System.Drawing.Size(313, 428);
             this.Controls.Add(this.optionsGroupBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.importButton);
@@ -287,5 +301,6 @@
         public System.Windows.Forms.CheckBox stageMatCB;
         private System.Windows.Forms.CheckBox vertColorDivCB;
         private System.Windows.Forms.GroupBox optionsGroupBox;
+        private System.Windows.Forms.CheckBox vertColorCB255;
     }
 }

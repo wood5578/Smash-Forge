@@ -139,6 +139,10 @@ namespace SmashForge
                         if (vertcolorCB.Checked)
                             v.color = new Vector4(127, 127, 127, 127);
 
+                        // Set vertex colors to white (255).
+                        if (vertColorCB255.Checked)
+                            v.color = new Vector4(255, 255, 255, 255);
+
                         // Rotate 90 degrees.
                         if (rotate90CB.Checked)
                         {
@@ -196,6 +200,33 @@ namespace SmashForge
                 {
                     vbnFileLabel.Text = ofd.FileName;
                 }
+            }
+        }
+
+        private void vertColorCB255_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vertColorCB255.Checked == true)
+            {
+                vertcolorCB.Checked = false;
+                vertcolorCB.Enabled = false;
+            }
+            else
+            {
+                vertcolorCB.Enabled = true;
+            }
+            
+        }
+
+        private void vertcolorCB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vertcolorCB.Checked == true)
+            {
+                vertColorCB255.Checked = false;
+                vertColorCB255.Enabled = false;
+            }
+            else
+            {
+                vertColorCB255.Enabled = true;
             }
         }
     }
