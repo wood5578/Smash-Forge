@@ -84,8 +84,9 @@ namespace SmashForge
             public int polflag {
                 get { return boneType > 0 ? 4 : 0; }
                 set {
-                    if (value == 0 && boneType == 0) {}
-                    else if (value == 4 && boneType != 0) {}
+                    if (value == 0 && boneType == 0) { }
+                    else if (value == 4 && boneType != 0) { }
+                    else if (value == 0 && boneType == 64) { }
                     else throw new NotImplementedException("Poly flag not supported " + value);
                 }
             }
