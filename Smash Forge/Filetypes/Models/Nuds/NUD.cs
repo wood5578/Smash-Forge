@@ -836,7 +836,10 @@ namespace SmashForge
             if (magic.Equals("NDP3"))
                 Endian = Endianness.Big;
             else if (magic.Equals("NDWD"))
+            {
                 Endian = Endianness.Little;
+            }
+                
 
             fileData.endian = Endian;
             fileData.ReadUInt(); //Filesize
@@ -1220,7 +1223,11 @@ namespace SmashForge
         public override byte[] Rebuild()
         {
             FileOutput d = new FileOutput(); // data
-            d.endian = Endianness.Big;
+
+            // Force Endian to little when NDWD Format checkbox is checked
+            if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())                
+                Endian = Endianness.Little;
+                
             if (Endian == Endianness.Big)
                 d.WriteString("NDP3");
             else if (Endian == Endianness.Little)
@@ -1330,16 +1337,36 @@ namespace SmashForge
                     obj.WriteInt(texoff[2] > 0 ? texoff[2] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
                     obj.WriteInt(texoff[3] > 0 ? texoff[3] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    obj.WriteUShort((ushort)p.vertexIndices.Count); // polyamt
-                    obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
+                    // Upon checking 'NDWD format', run tris to tri-strip conversion and recalculate num of indices
+                    if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())
+                    {
+                        // Generate the indices for the triangle strip
+                        ushort[] stripIndices = GenerateTriangleStrip(p);
+                        obj.WriteUShort((ushort)(stripIndices.Length - 1)); // Writing the correct number of indices for the triangle strip
+                        p.strip = 0;
+                        obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
 
-                    obj.WriteInt(0); // idk, nothing padding??
-                    obj.WriteInt(0);
-                    obj.WriteInt(0);
+                        obj.WriteInt(0); // idk, nothing padding??
+                        obj.WriteInt(0);
+                        obj.WriteInt(0);
 
-                    // Write the poly...
-                    foreach (int face in p.vertexIndices)
-                        poly.WriteShort(face);
+                        // Write for Triangle Strip mode
+                        foreach (ushort index in stripIndices)
+                            poly.WriteShort(index);
+                    }
+                    else
+                    {
+                        obj.WriteUShort((ushort)p.vertexIndices.Count); // polyamt
+                        obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
+
+                        obj.WriteInt(0); // idk, nothing padding??
+                        obj.WriteInt(0);
+                        obj.WriteInt(0);
+
+                        // Write the poly...
+                        foreach (int face in p.vertexIndices)
+                            poly.WriteShort(face);
+                    }
 
                     // Write the vertex....
                     if (p.boneType > 0)
@@ -1634,6 +1661,41 @@ namespace SmashForge
                 }
             }
             return offs;
+        }
+
+        private void WriteTriangleStrip(Polygon p, FileOutput poly)
+        {
+            for (int i = 0; i < p.vertexIndices.Count; i++)
+            {
+                if (i > 0 && i % 3 == 0)
+                {
+                    // Insert the primitive restart after every triangle
+                    poly.WriteShort(0xFFFF);
+                }
+                poly.WriteShort(p.vertexIndices[i]);
+            }
+            // Add a final primitive restart to ensure proper ending
+            poly.WriteShort(0xFFFF);
+        }
+
+        private ushort[] GenerateTriangleStrip(Polygon p)
+        {
+            List<ushort> stripIndices = new List<ushort>();
+
+            for (int i = 0; i < p.vertexIndices.Count; i++)
+            {
+                if (i > 0 && i % 3 == 0)
+                {
+                    // Insert the primitive restart after every triangle
+                    stripIndices.Add(0xFFFF);
+                }
+                stripIndices.Add((ushort)p.vertexIndices[i]);
+            }
+
+            // Add a final primitive restart to ensure proper ending
+            stripIndices.Add(0xFFFF);
+
+            return stripIndices.ToArray();
         }
 
         public void MergePoly()

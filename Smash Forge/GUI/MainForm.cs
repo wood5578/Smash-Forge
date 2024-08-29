@@ -1707,6 +1707,12 @@ namespace SmashForge
             return false;
         }
 
+        // Checkbox to save in NDWD
+        public bool IsNDWDChecked()
+        {
+            return cbIsNDWD.Checked;
+        }
+
         private ModelContainer ResyncTargetVbn()
         {
             // TODO: ???
