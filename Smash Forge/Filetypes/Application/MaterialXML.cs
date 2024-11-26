@@ -74,9 +74,10 @@ namespace SmashForge
             AddUintAttribute(doc, "flags", mat.Flags, matNode, true);
             AddIntAttribute(doc, "srcFactor", mat.SrcFactor, matNode, false);
             AddIntAttribute(doc, "dstFactor", mat.DstFactor, matNode, false);
-            AddIntAttribute(doc, "alphaFunc", mat.AlphaFunc, matNode, true);
-            AddIntAttribute(doc, "alphaRef", mat.RefAlpha, matNode, false);
-            AddIntAttribute(doc, "cullMode", mat.CullMode, matNode, true);
+            AddIntAttribute(doc, "AlphaFunc", mat.AlphaFunction, matNode, false);
+            AddIntAttribute(doc, "AlphaTest", mat.AlphaTest, matNode, false);
+            AddIntAttribute(doc, "RefAlpha", mat.RefAlpha, matNode, false);
+            AddIntAttribute(doc, "cullmode", mat.CullMode, matNode, true);
             AddIntAttribute(doc, "zbuffoff", mat.ZBufferOffset, matNode, false);
         }
 
@@ -113,14 +114,13 @@ namespace SmashForge
                 }
                 else
                 {
-                    float[] values = mat.GetPropertyValues(materialProperty);
-                    // Only print 4 values, to avoid lots of trailing zeroes.
-                    for (int count = 0, max = Math.Min(4, values.Length);;)
+                    int count = 0;
+                    foreach (float f in mat.GetPropertyValues(materialProperty))
                     {
-                        paramnode.InnerText += values[count++].ToString("G9");
-                        if (count >= max)
-                            break;
-                        paramnode.InnerText += " ";
+                        // Only print 4 values and avoids tons of trailing 0's.
+                        if (count <= 4)
+                            paramnode.InnerText += f.ToString() + " ";
+                        count += 1;
                     }
 
                 }
@@ -252,7 +252,7 @@ namespace SmashForge
 
         private static void ReadAttributes(XmlNode materialNode, Nud.Material material)
         {
-            int value;
+            int value = 0;
             foreach (XmlAttribute attribute in materialNode.Attributes)
             {
                 switch (attribute.Name)
@@ -270,28 +270,6 @@ namespace SmashForge
                         int.TryParse(attribute.Value, out value);
                         material.DstFactor = value;
                         break;
-                    case "alphaFunc":
-                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
-                        material.AlphaFunc = value;
-                        break;
-                    // "RefAlpha" was the old name, still supported for historical compatibility with old XMLs.
-                    case "alphaRef":
-                    case "RefAlpha":
-                        int.TryParse(attribute.Value, out value);
-                        material.RefAlpha = value;
-                        break;
-                    // "cullmode" was the old name, still supported
-                    case "cullMode":
-                    case "cullmode":
-                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
-                        material.CullMode = value;
-                        break;
-                    case "zbuffoff":
-                        int.TryParse(attribute.Value, out value);
-                        material.ZBufferOffset = value;
-                        break;
-
-                    // No longer used, but still supported.
                     case "AlphaFunc":
                         int.TryParse(attribute.Value, out value);
                         material.AlphaFunction = value;
@@ -299,6 +277,18 @@ namespace SmashForge
                     case "AlphaTest":
                         int.TryParse(attribute.Value, out value);
                         material.AlphaTest = value;
+                        break;
+                    case "RefAlpha":
+                        int.TryParse(attribute.Value, out value);
+                        material.RefAlpha = value;
+                        break;
+                    case "cullmode":
+                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
+                        material.CullMode = value;
+                        break;
+                    case "zbuffoff":
+                        int.TryParse(attribute.Value, out value);
+                        material.ZBufferOffset = value;
                         break;
                 }
             }

@@ -123,6 +123,16 @@ namespace SmashForge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BG_V101_ {
+            get {
+                object obj = ResourceManager.GetObject("BG-V101_", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bitan {
             get {
                 object obj = ResourceManager.GetObject("bitan", resourceCulture);

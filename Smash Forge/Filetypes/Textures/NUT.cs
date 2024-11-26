@@ -507,7 +507,7 @@ namespace SmashForge
             {
                 ReadNTWU(d);
             }
-            else if (magic == 0x4E545744) //NTWD
+            else if (magic == 0x4E545744 || magic == 0x4E544C58 || magic == 0x4E545852) //NTWD, NTWD, NTXR
             {
                 Endian = Endianness.Little;
                 d.endian = Endian;

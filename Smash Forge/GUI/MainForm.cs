@@ -80,7 +80,7 @@ namespace SmashForge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Config.StartupFromFile(executableDir + "\\config.xml");
+                Config.StartupFromFile(executableDir + "\\config.xml");
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
             DiscordSettings.discordController = new DiscordController();
@@ -1713,6 +1713,20 @@ namespace SmashForge
             return cbIsNDWD.Checked;
         }
 
+        public void DisableNDWDCheckBox()
+        {
+            cbIsNDWD.Checked = false;
+            cbIsNDWD.Visible = false;
+            cbIsNDWD.Enabled = false;
+        }
+
+        public void EnableNDWDCheckBox()
+        {
+            cbIsNDWD.Checked = true;
+            cbIsNDWD.Visible = true;
+            cbIsNDWD.Enabled = true;
+        }
+
         private ModelContainer ResyncTargetVbn()
         {
             // TODO: ???
@@ -1957,6 +1971,9 @@ namespace SmashForge
         {
             ModelViewport mvp = new ModelViewport();
             AddDockedControl(mvp);
+            cbIsNDWD.Visible = true;
+            cbIsNDWD.Enabled = true;
+            cbIsNDWD.Checked = true;
         }
 
         private void dSTexToolStripMenuItem_Click(object sender, EventArgs e)

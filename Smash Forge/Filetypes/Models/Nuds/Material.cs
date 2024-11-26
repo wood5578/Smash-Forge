@@ -40,16 +40,8 @@ namespace SmashForge
             public int DstFactor { get; set; }
             public int SrcFactor { get; set; }
 
-            // AlphaTest and AlphaFunction are deprecated. Use AlphaFunc instead.
-            public int AlphaFunc = 0;
-            public int AlphaTest {
-                get { return AlphaFunc >> 8; }
-                set { AlphaFunc = (value << 8) | (AlphaFunc & 0xFF); }
-            }
-            public int AlphaFunction {
-                get { return AlphaFunc & 0xFF; }
-                set { AlphaFunc = (AlphaFunc & 0xFF00) | (value & 0xFF); }
-            }
+            public int AlphaTest { get; set; }
+            public int AlphaFunction { get; set; }
             public int RefAlpha { get; set; }
 
             public int CullMode { get; set; }

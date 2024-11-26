@@ -802,7 +802,7 @@ namespace SmashForge
         // Helpers for reading
         private struct ObjectData
         {
-            public short singlebind;
+            public int singlebind;
             public int polyCount;
             public int positionb;
             public string name;
@@ -833,14 +833,15 @@ namespace SmashForge
             // read header
             string magic = fileData.ReadString(0, 4);
             fileData.Seek(4);
+
             if (magic.Equals("NDP3"))
                 Endian = Endianness.Big;
             else if (magic.Equals("NDWD"))
             {
+                // Hide 'save NDWD' button, safety net for preventing resaving NDWD corruption
+                ((MainForm)Application.OpenForms[0]).DisableNDWDCheckBox();
                 Endian = Endianness.Little;
             }
-                
-
             fileData.endian = Endian;
             fileData.ReadUInt(); //Filesize
 
@@ -902,7 +903,7 @@ namespace SmashForge
                 m.Text = o.name;
                 Nodes.Add(m);
                 m.boneflag = boneflags[meshIndex];
-                m.singlebind = o.singlebind;
+                m.singlebind = (short)o.singlebind;
                 m.boundingSphere = boundingSpheres[meshIndex++];
 
                 for (int i = 0; i < o.polyCount; i++)
@@ -953,7 +954,8 @@ namespace SmashForge
                 m.SrcFactor = d.ReadUShort();
                 ushort texCount = d.ReadUShort();
                 m.DstFactor = d.ReadUShort();
-                m.AlphaFunc = d.ReadUShort();
+                m.AlphaTest = d.ReadByte();
+                m.AlphaFunction = d.ReadByte();
                 m.RefAlpha = d.ReadUShort();
                 m.CullMode = d.ReadUShort();
                 d.Skip(4); // unknown
@@ -1042,20 +1044,17 @@ namespace SmashForge
             if (m.boneType > 0)
             {
                 foreach (Vertex v in vertices)
-                    ReadUV(d, m, v);
+                    ReadUV(d, p, o, m, v);
                 d.Seek(p.verAddStart);
                 foreach (Vertex v in vertices)
-                    ReadVertex(d, m, v);
+                    ReadVertex(d, p, o, m, v);
             }
             else
             {
                 foreach (Vertex v in vertices)
                 {
-                    ReadVertex(d, m, v);
-                    ReadUV(d, m, v);
-
-                    v.boneIds.Add(o.singlebind);
-                    v.boneWeights.Add(1);
+                    ReadVertex(d, p, o, m, v);
+                    ReadUV(d, p, o, m, v);
                 }
             }
 
@@ -1072,36 +1071,28 @@ namespace SmashForge
             return m;
         }
 
-        private static void ReadUV(FileData d, Polygon poly, Vertex v)
+        private static void ReadUV(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
         {
-            int uvCount = poly.uvCount;
-            int colorType = poly.colorType;
-            int uvType = poly.uvType;
+            int uvCount = (p.UVSize >> 4);
+            int colorType = (p.UVSize) & 0xF;
 
-            if (colorType == (int)Polygon.VertexColorTypes.None)
+            if (colorType == 0x0)
                 {}
-            else if (colorType == (int)Polygon.VertexColorTypes.Byte)
+            else if (colorType == 0x2)
                 v.color = new Vector4(d.ReadByte(), d.ReadByte(), d.ReadByte(), d.ReadByte());
-            else if (colorType == (int)Polygon.VertexColorTypes.HalfFloat)
+            else if (colorType == 0x4)
                 v.color = new Vector4(d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF);
             else
-                throw new NotImplementedException($"Unsupported vertex color type: {colorType}");
+                throw new NotImplementedException("UV type not supported " + colorType);
 
-            for (int i = 0; i < uvCount; i++)
-            {
-                if (uvType == (int)Polygon.UVTypes.HalfFloat)
-                    v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
-                else if (uvType == (int)Polygon.UVTypes.Float)
-                    v.uv.Add(new Vector2(d.ReadFloat(), d.ReadFloat()));
-                else
-                    throw new NotImplementedException($"Unsupported UV type: {uvType}");
-            }
+            for (int j = 0; j < uvCount; j++)
+                v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
         }
 
-        private static void ReadVertex(FileData d, Polygon poly, Vertex v)
+        private static void ReadVertex(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
         {
-            int boneType = poly.boneType;
-            int vertexType = poly.normalType;
+            int boneType = p.vertSize & 0xF0;
+            int vertexType = p.vertSize & 0xF;
 
             v.pos.X = d.ReadFloat();
             v.pos.Y = d.ReadFloat();
@@ -1180,6 +1171,8 @@ namespace SmashForge
 
             if (boneType == (int)Polygon.BoneTypes.NoBones)
             {
+                v.boneIds.Add((short)o.singlebind);
+                v.boneWeights.Add(1);
             }
             else if (boneType == (int)Polygon.BoneTypes.Float)
             {
@@ -1224,14 +1217,21 @@ namespace SmashForge
         {
             FileOutput d = new FileOutput(); // data
 
-            // Force Endian to little when NDWD Format checkbox is checked
-            if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())                
+            // Check NDWD checkbox
+            if (((MainForm)Application.OpenForms[0]).IsNDWDChecked()) 
+            {
                 Endian = Endianness.Little;
-                
-            if (Endian == Endianness.Big)
-                d.WriteString("NDP3");
-            else if (Endian == Endianness.Little)
-                d.WriteString("NDWD");
+                d.endian = Endianness.Little;
+                d.WriteString("NDWD"); // Little Endian identifier
+            }
+            else
+            {
+                d.endian = Endianness.Big;
+                if (Endian == Endianness.Big)
+                    d.WriteString("NDP3");
+                else if (Endian == Endianness.Little)
+                    d.WriteString("NDWD");
+            }   
 
             d.endian = Endian;
             d.WriteInt(0); //Filesize
@@ -1337,23 +1337,24 @@ namespace SmashForge
                     obj.WriteInt(texoff[2] > 0 ? texoff[2] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
                     obj.WriteInt(texoff[3] > 0 ? texoff[3] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    // Upon checking 'NDWD format', run tris to tri-strip conversion and recalculate num of indices
+                    // Check whether to build Triangle Strip or List
                     if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())
                     {
                         // Generate the indices for the triangle strip
                         ushort[] stripIndices = GenerateTriangleStrip(p);
-                        obj.WriteUShort((ushort)(stripIndices.Length - 1)); // Writing the correct number of indices for the triangle strip
-                        p.strip = 0;
-                        obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
-
+                        obj.WriteUShort((ushort)(stripIndices.Length -1)); // Writing the correct number of indices for the triangle strip
+                        obj.WriteUShort((ushort)0);
+                        
                         obj.WriteInt(0); // idk, nothing padding??
                         obj.WriteInt(0);
                         obj.WriteInt(0);
 
                         // Write for Triangle Strip mode
                         foreach (ushort index in stripIndices)
+                        {
                             poly.WriteShort(index);
-                    }
+                        }
+                    }                   
                     else
                     {
                         obj.WriteUShort((ushort)p.vertexIndices.Count); // polyamt
@@ -1367,6 +1368,37 @@ namespace SmashForge
                         foreach (int face in p.vertexIndices)
                             poly.WriteShort(face);
                     }
+
+                    //obj.WriteUShort((ushort)p.vertexIndices.Count); // polyamt
+                    //if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())
+                    //{
+                    //    p.strip = 0;
+                    //    p.polflag = 0;
+                    //    obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
+                    //}
+                    //else
+                    //{
+                    //    obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
+                    //}
+
+                    //obj.WriteInt(0); // idk, nothing padding??
+                    //obj.WriteInt(0);
+                    //obj.WriteInt(0);
+
+                    //foreach (int face in p.vertexIndices)
+                    //poly.WriteShort(face);
+
+                    //if (((MainForm)Application.OpenForms[0]).IsNDWDChecked())
+                    //{
+                    //    // Write for Triangle Strip mode
+                    //    WriteTriangleStrip(p, poly);
+                    //}
+                    //else 
+                    //{ 
+                    //    // Write the poly...
+                    //    foreach (int face in p.vertexIndices)
+                    //    poly.WriteShort(face);
+                    //}                        
 
                     // Write the vertex....
                     if (p.boneType > 0)
@@ -1428,21 +1460,20 @@ namespace SmashForge
 
         private static void WriteUV(FileOutput d, Polygon poly, Vertex v)
         {
-            int uvCount = poly.uvCount;
-            int colorType = poly.colorType;
-            int uvType = poly.uvType;
+            int uvCount = (poly.UVSize >> 4);
+            int colorType = (poly.UVSize) & 0xF;
 
-            if (colorType == (int)Polygon.VertexColorTypes.None)
+            if (colorType == 0x0)
             {
             }
-            else if (colorType == (int)Polygon.VertexColorTypes.Byte)
+            else if (colorType == 0x2)
             {
                 d.WriteByte((int)v.color.X);
                 d.WriteByte((int)v.color.Y);
                 d.WriteByte((int)v.color.Z);
                 d.WriteByte((int)v.color.W);
             }
-            else if (colorType == (int)Polygon.VertexColorTypes.HalfFloat)
+            else if (colorType == 0x4)
             {
                 d.WriteHalfFloat(v.color.X / 0xFF);
                 d.WriteHalfFloat(v.color.Y / 0xFF);
@@ -1451,32 +1482,20 @@ namespace SmashForge
             }
             else
             {
-                throw new NotImplementedException($"Unsupported vertex color type: {colorType}");
+                throw new NotImplementedException("UV type not supported " + colorType);
             }
 
-            for (int i = 0; i < uvCount; i++)
+            for (int j = 0; j < uvCount; j++)
             {
-                if (uvType == (int)Polygon.UVTypes.HalfFloat)
-                {
-                    d.WriteHalfFloat(v.uv[i].X);
-                    d.WriteHalfFloat(v.uv[i].Y);
-                }
-                else if (uvType == (int)Polygon.UVTypes.Float)
-                {
-                    d.WriteFloat(v.uv[i].X);
-                    d.WriteFloat(v.uv[i].Y);
-                }
-                else
-                {
-                    throw new NotImplementedException($"Unsupported UV type: {uvType}");
-                }
+                d.WriteHalfFloat(v.uv[j].X);
+                d.WriteHalfFloat(v.uv[j].Y);
             }
         }
 
         private static void WriteVertex(FileOutput d, Polygon poly, Vertex v)
         {
-            int boneType = poly.boneType;
-            int vertexType = poly.normalType;
+            int boneType = poly.vertSize & 0xF0;
+            int vertexType = poly.vertSize & 0xF;
 
             d.WriteFloat(v.pos.X);
             d.WriteFloat(v.pos.Y);
@@ -1607,7 +1626,9 @@ namespace SmashForge
                 d.WriteShort(mat.SrcFactor);
                 d.WriteShort(mat.textures.Count);
                 d.WriteShort(mat.DstFactor);
-                d.WriteShort(mat.AlphaFunc);
+                d.WriteByte(mat.AlphaTest);
+                d.WriteByte(mat.AlphaFunction);
+
                 d.WriteShort(mat.RefAlpha);
                 d.WriteShort(mat.CullMode);
                 d.WriteInt(0); // unknown
@@ -1697,6 +1718,7 @@ namespace SmashForge
 
             return stripIndices.ToArray();
         }
+
 
         public void MergePoly()
         {
@@ -1904,8 +1926,8 @@ namespace SmashForge
             m.singlebind = (short)singleBindBone;
             foreach (Polygon p in m.Nodes)
             {
-                p.boneType = 0;
                 p.polflag = 0;
+                p.vertSize = p.vertSize & 0x0F;
             }
         }
 

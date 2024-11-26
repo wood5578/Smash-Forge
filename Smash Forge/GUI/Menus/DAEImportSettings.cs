@@ -41,7 +41,8 @@ namespace SmashForge
             InitializeComponent();
             Populate();
 
-            transUvVerticalCB.Checked = true;
+            // transUvVerticalCB.Checked = false;
+            vertcolor255CB.Checked = true;
         }
         
         public void Populate()
@@ -55,8 +56,13 @@ namespace SmashForge
             foreach (string key in BoneTypes.Keys)
                 boneTypeComboBox.Items.Add(key);
 
-            vertTypeComboBox.SelectedIndex = 4;
-            boneTypeComboBox.SelectedIndex = 3;
+            // Forge Default
+            // vertTypeComboBox.SelectedIndex = 4;
+            // boneTypeComboBox.SelectedIndex = 3;
+            
+            // For WMMT
+            vertTypeComboBox.SelectedIndex = 3;
+            boneTypeComboBox.SelectedIndex = 0;
 
             vertTypeComboBox.EndUpdate();
             boneTypeComboBox.EndUpdate();
@@ -135,12 +141,26 @@ namespace SmashForge
                             for (int i = 0; i < 3; i++)
                                 v.color[i] = v.color[i] / 2;
 
+                        // Double vertex colors (for NDWD)
+                        if (vertColorMultCB.Checked)
+                            for (int i = 0; i <= 3; i++)
+                            {
+                                if (v.color[i] >= 127)
+                                {
+                                    v.color[i] = v.color[i] * 2 + 1;
+                                }
+                                else
+                                {
+                                    v.color[i] = v.color[i] * 2;
+                                }
+                            }
+
                         // Set vertex colors to white. 
                         if (vertcolorCB.Checked)
                             v.color = new Vector4(127, 127, 127, 127);
 
-                        // Set vertex colors to white (255).
-                        if (vertColorCB255.Checked)
+                        // Set vertex colors to white. 
+                        if (vertcolor255CB.Checked)
                             v.color = new Vector4(255, 255, 255, 255);
 
                         // Rotate 90 degrees.
@@ -200,33 +220,6 @@ namespace SmashForge
                 {
                     vbnFileLabel.Text = ofd.FileName;
                 }
-            }
-        }
-
-        private void vertColorCB255_CheckedChanged(object sender, EventArgs e)
-        {
-            if (vertColorCB255.Checked == true)
-            {
-                vertcolorCB.Checked = false;
-                vertcolorCB.Enabled = false;
-            }
-            else
-            {
-                vertcolorCB.Enabled = true;
-            }
-            
-        }
-
-        private void vertcolorCB_CheckedChanged(object sender, EventArgs e)
-        {
-            if (vertcolorCB.Checked == true)
-            {
-                vertColorCB255.Checked = false;
-                vertColorCB255.Enabled = false;
-            }
-            else
-            {
-                vertColorCB255.Enabled = true;
             }
         }
     }

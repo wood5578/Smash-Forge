@@ -13,7 +13,7 @@ namespace SmashForge
         {
             public enum BoneTypes
             {
-                NoBones = 0x00,
+                NoBones =  0x00,
                 Float = 0x10,
                 HalfFloat = 0x20,
                 Byte = 0x40
@@ -26,12 +26,6 @@ namespace SmashForge
                 NormalsTanBiTanFloat = 0x3,
                 NormalsHalfFloat = 0x6,
                 NormalsTanBiTanHalfFloat = 0x7
-            }
-
-            public enum UVTypes
-            {
-                HalfFloat = 0,
-                Float = 1 // Only seen in Wangan Midnight
             }
 
             public enum VertexColorTypes
@@ -73,21 +67,19 @@ namespace SmashForge
 
             public int uvCount = 1;
             public int colorType = (int)VertexColorTypes.Byte;
-            public int uvType = (int)UVTypes.HalfFloat;
-            // uvCount is upper nybble, colorType and uvType is lower nybble
+            // uvCount is upper nybble, normalType is lower nybble
             public int UVSize {
-                get { return (uvCount << 4) | (colorType & 0xE) | uvType; }
-                set { uvCount = value >> 4; colorType = value & 0xE; uvType = value & 1;}
+                get { return (uvCount << 4) | (colorType & 0xF); }
+                set { uvCount = value >> 4; colorType = value & 0xF; }
             }
 
             public int strip = (int)PrimitiveTypes.Triangles;
             public int polflag {
                 get { return boneType > 0 ? 4 : 0; }
                 set {
-                    if (value == 0 && boneType == 0) { }
-                    else if (value == 4 && boneType != 0) { }
-                    else if (value == 0 && boneType == 64) { }
-                    else throw new NotImplementedException("Poly flag not supported " + value);
+                    if (value == 0 && boneType == 0) {}
+                    else if (value == 4 && boneType != 0) {}
+                    //else throw new NotImplementedException("Poly flag not supported " + value);
                 }
             }
 

@@ -986,6 +986,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -1491,6 +1492,10 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\WMMT-forge.png" />
+    <None Include="Resources\WMMT-forge3.png" />
+    <None Include="Resources\WMMT-forge2.png" />
+    <None Include="Resources\WMMT-forge1.png" />
     <None Include="Resources\specularSDR.dds" />
     <None Include="Resources\_10100000.png" />
     <None Include="Resources\_10040001.png" />
@@ -1558,6 +1563,7 @@
     <None Include="Resources\Flat Folder icon.png" />
     <None Include="Resources\boneWeightGradient2.png" />
     <None Include="Resources\diffuseSDR.dds" />
+    <None Include="Resources\BG-V101_.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1592,6 +1598,7 @@
     <None Include="Resources\icon_model2.png" />
     <None Include="Resources\icon_bfres.bmp" />
     <None Include="Resources\icon_dat.png" />
+    <None Include="Resources\Image1.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
